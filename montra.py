@@ -16,12 +16,14 @@ __all__ = ()
 import requests
 from requests.auth import HTTPDigestAuth
 
+URL = 'https://bioinformatics.ua.pt/ehden'
+COMM = "ehden"
 
 class Montra:
-    def __init__(self, url='https://bioinformatics.ua.pt/ehden'):
+    def __init__(self, url=URL):
         self.ENDPOINT = url
 
-    def search_datasets(self, user, password, questionnaire):
+    def search_datasets(self, user, password, questionnaire=COMM):
         """
         Search for the questionnaires in all communities
 
@@ -31,7 +33,7 @@ class Montra:
 
         return self.__get_request(url=url, auth=(user, password))
 
-    def get_dataset(self, user, password, questionnaireSlug):
+    def get_dataset(self, user, password, questionnaireSlug=COMM):
         """
         Gets the dataset by the slug, which is the identifier
 
@@ -57,7 +59,7 @@ class Montra:
         
         return self.__get_request(url=url, auth=(user, password))
 
-    def __get_dataentry_by_acronym(self, user, password, acronym, questionnaireSlug):
+    def __get_dataentry_by_acronym(self, user, password, acronym, questionnaireSlug=COMM):
         """
         Gets the fingerprint by the fingprint acronym and the questionnaire slug
 
