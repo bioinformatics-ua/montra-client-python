@@ -18,8 +18,9 @@ from requests.auth import HTTPDigestAuth
 
 URL = 'https://bioinformatics.ua.pt/ehden'
 COMM = "ehden"
-AUTH_TYPE = 'basic'
+
 ERROR_MESSAGES = {
+    "bad_arg": "The argments passed in the constructor are invalid! Please provide a token or the basic credentials using the parameters 'username' and 'password'",
     "bad_auth_type": "Authentication type not valid. Authentication type should be set as 'basic' or 'token' ",
     "bad_auth_params": ("Authentication parameters are missing! Please provide valid credentials." 
                         "You can use either an username and password for a basic authentication or a valid API token using token authentication"),
@@ -27,21 +28,17 @@ ERROR_MESSAGES = {
 }
 
 class Montra:
-    def __init__(self, url=URL, auth_type=AUTH_TYPE, username=None, password=None, token=None):
-
-        #params validation
-        if auth_type not in ['basic', 'token']:
-            raise ValueError(ERROR_MESSAGES["bad_auth_type"])
-
-        if ( auth_type == 'basic' and (username is None or password is None) ) \
-            and ( auth_type == 'token' and token is None ):
-            raise ValueError(ERROR_MESSAGES["bad_auth_params"])
-
+    def __init__(self, url=URL, **args):#auth_type=AUTH_TYPE, username=None, password=None, token=None):
+        if token in args:
+            self.token = args["token"]
+            self.auth_type = 'token'
+        elif username in args and password in args:
+            self.username = args["username"]
+            self.password = args["password"]
+            self.auth_type = 'token'
+        else:
+            raise ValueError(ERROR_MESSAGES["bad_arg"])
         self.ENDPOINT = url
-        self.USERNAME = username
-        self.PASSWORD = password
-        self.TOKEN = token
-        self.AUTH_TYPE = auth_type
 
     def search_datasets(self, questionnaire=COMM):
         """
@@ -115,30 +112,30 @@ class Montra:
 
         return: json with question and answer
         """
+        url = self.ENDPOINT + "/api/fingerprints/" + str(fingerprintHash) + "/answers/" + str(question) + "/"
+
+        return self.__get_request(url=url, data=data={"data":newAnswer})
+
+    def __get_request(self, url):
         try:
-            url = self.ENDPOINT + "/api/fingerprints/" + str(fingerprintHash) + "/answers/" + str(question) + "/"
-
-            if self.AUTH_TYPE == 'basic':
-                response = requests.put(url, auth=(self.USERNAME, self.PASSWORD), data={"data":newAnswer})
-            elif self.AUTH_TYPE == 'token':
-                response = requests.put(url, headers={'Authorization': 'Token ' + self.TOKEN}, data={"data":newAnswer})
-
+            if self.auth_type == 'basic':
+                response = requests.get(url, auth=(self.USERNAME, self.PASSWORD))
+            elif self.auth_type == 'token':
+                response = requests.get(url, headers={'Authorization': 'Token ' + self.TOKEN})
+            else:
+                raise ValueError(ERROR_MESSAGES["bad_auth_type"])
             response.raise_for_status()
-
             return response.json()
         except requests.exceptions.HTTPError as err:
             print err
             sys.exit(1)
 
-    def __get_request(self, url):
+    def __post_request(self, url, data):
         try:
-            if self.AUTH_TYPE == 'basic':
-                response = requests.get(url, auth=(self.USERNAME, self.PASSWORD))
-            elif self.AUTH_TYPE == 'token':
-                response = requests.get(url, headers={'Authorization': 'Token ' + self.TOKEN})
-            else:
-                raise ValueError(ERROR_MESSAGES["bad_auth_type"])
-
+            if self.auth_type == 'basic':
+                response = requests.put(url, auth=(self.USERNAME, self.PASSWORD), data=data)
+            elif self.auth_type == 'token':
+                response = requests.put(url, headers={'Authorization': 'Token ' + self.TOKEN}, data=data)
             response.raise_for_status()
             return response.json()
         except requests.exceptions.HTTPError as err:
