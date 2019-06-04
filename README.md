@@ -6,7 +6,7 @@ Montra Webservices Wrapper for Python
 
 ### Prerequisites
 
-It must exist an instance of montra up and running. It's also necessary valid credentials to execute this client (user and password for basic authentication, or a token for token authentication).
+It must exist an instance of montra up and running. It's also necessary valid credentials to execute this client (user and password for basic authentication, or an API token for token authentication).
 
 ### Client initialization
 The client can be initialiazed using basic or token authentication. Bellow its listed all the available arguments and also examples for how to instanciate the client using the available authentications methods.
@@ -31,63 +31,51 @@ montra = Montra(url="http://127.0.0.1:8000", token='de4611bcf0c6e393404fac095dab
 ```
 ### Available Methods
 
-1. search_datasets
+* **Search Datasets**
 
-#### Parameters:
-* **questionnaire** - (TODO)
+    Parameters:
+    * **questionnaire** - Search string with the  questionnaire slug or name
+    
+    Example:
+    ```python
+    list_of_datasets = montra.search_datasets(questionnaire="some questionnaire name")
 
-#### Returns
-(Todo)
+    ```
 
-#### Example:
-```python
-list_of_datasets = montra.search_datasets(questionnaire="some questionnaire name")
+* **Get Dataset**
 
-```
+    Parameters:
+    * **questionnaireSlug** - Questionnaire slug
 
-2. get_dataset
+    Example:
+    ```python
+    dataset = montra.get_dataset(questionnaireSlug='someslug')
 
-#### Parameters:
-* **questionnaireSlug** - (TODO)
+    ```
 
-#### Returns
-(Todo)
+* **Get Dataentry**
 
-#### Example:
-```python
-dataset = montra.get_dataset(questionnaireSlug='someslug')
+    Parameters:
+    * **questionnaireSlug** - Questionnaire slug
+    * **acronym** - Fingerprint (database entry) acronym
+    * **fingerprintHash** - Fingerprint (database entry) hash
 
-```
+    Example using 1 arg:
+    ```python
+    database_entry = montra.get_dataentry(fingerprintHash='somefingerprinthash')
 
-3. get_dataentry
+    ```
+    Example using 2 args:
+    ```python
+    database_entry = montra.get_dataentry(acronym="ADC", questionnaireSlug="adcohort")
 
-#### Parameters:
-* **questionnaireSlug** - (TODO)
-* **acronym** - (TODO)
+    ```
+
+* **List Answers**
+
+Parameters:
 * **fingerprintHash** - (TODO)
 
-#### Returns
-(Todo)
-
-#### Example using 1 arg:
-```python
-database_entry = montra.get_dataentry(fingerprintHash='somefingerprinthash')
-
-```
-
-#### Example using 2 args:
-```python
-database_entry = montra.get_dataentry(acronym="ADC", questionnaireSlug="adcohort")
-
-```
-
-4. list_answer
-
-#### Parameters:
-* **fingerprintHash** - (TODO)
-
-#### Returns
-(Todo)
 
 #### Example:
 ```python
