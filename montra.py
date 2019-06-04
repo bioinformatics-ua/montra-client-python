@@ -114,7 +114,7 @@ class Montra:
         """
         url = self.ENDPOINT + "/api/fingerprints/" + str(fingerprintHash) + "/answers/" + str(question) + "/"
 
-        return self.__get_request(url=url, data={"data":newAnswer})
+        return self.__post_request(url=url, data={"data":newAnswer})
 
     def __get_request(self, url):
         try:
