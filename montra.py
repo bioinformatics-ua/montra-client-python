@@ -32,7 +32,7 @@ class Montra:
         if "token" in args:
             self.token = args["token"]
             self.auth_type = 'token'
-        elif username in args and password in args:
+        elif "username" in args and "password" in args:
             self.username = args["username"]
             self.password = args["password"]
             self.auth_type = 'basic'
@@ -119,9 +119,9 @@ class Montra:
     def __get_request(self, url):
         try:
             if self.auth_type == 'basic':
-                response = requests.get(url, auth=(self.USERNAME, self.PASSWORD))
+                response = requests.get(url, auth=(self.username, self.password))
             elif self.auth_type == 'token':
-                response = requests.get(url, headers={'Authorization': 'Token ' + self.TOKEN})
+                response = requests.get(url, headers={'Authorization': 'Token ' + self.token})
             else:
                 raise ValueError(ERROR_MESSAGES["bad_auth_type"])
             response.raise_for_status()
@@ -133,9 +133,9 @@ class Montra:
     def __post_request(self, url, data):
         try:
             if self.auth_type == 'basic':
-                response = requests.put(url, auth=(self.USERNAME, self.PASSWORD), data=data)
+                response = requests.put(url, auth=(self.username, self.password), data=data)
             elif self.auth_type == 'token':
-                response = requests.put(url, headers={'Authorization': 'Token ' + self.TOKEN}, data=data)
+                response = requests.put(url, headers={'Authorization': 'Token ' + self.token}, data=data)
             response.raise_for_status()
             return response.json()
         except requests.exceptions.HTTPError as err:
