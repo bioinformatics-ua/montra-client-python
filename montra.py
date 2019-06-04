@@ -140,4 +140,4 @@ class Montra:
             return response.json()
         except requests.exceptions.HTTPError as err:
             print err
-            sys.exit(1)
+            return None
