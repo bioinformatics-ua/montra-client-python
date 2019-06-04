@@ -28,14 +28,14 @@ ERROR_MESSAGES = {
 }
 
 class Montra:
-    def __init__(self, url=URL, **args):#auth_type=AUTH_TYPE, username=None, password=None, token=None):
-        if token in args:
+    def __init__(self, url=URL, **args):
+        if "token" in args:
             self.token = args["token"]
             self.auth_type = 'token'
         elif username in args and password in args:
             self.username = args["username"]
             self.password = args["password"]
-            self.auth_type = 'token'
+            self.auth_type = 'basic'
         else:
             raise ValueError(ERROR_MESSAGES["bad_arg"])
         self.ENDPOINT = url
@@ -114,7 +114,7 @@ class Montra:
         """
         url = self.ENDPOINT + "/api/fingerprints/" + str(fingerprintHash) + "/answers/" + str(question) + "/"
 
-        return self.__get_request(url=url, data=data={"data":newAnswer})
+        return self.__get_request(url=url, data={"data":newAnswer})
 
     def __get_request(self, url):
         try:
