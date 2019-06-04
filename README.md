@@ -11,11 +11,11 @@ It must exist an instance of montra up and running. It's also necessary valid cr
 ### Client initialization
 The client can be initialiazed using basic or token authentication. Bellow its listed all the available arguments and also examples for how to instanciate the client using the available authentications methods.
 
-####Available parameters:
-**username** - Montra username
-**password** - Montra password
-**token** - An API token that can be obtained through 'API information' of montra. When using token authentication the auth_type must be set to 'token'.
-**auth_type** - Can be 'basic' or 'token'. The default value is 'basic' 
+#### Available parameters:
+* **username** - Montra username
+* **password** - Montra password
+* **token** - An API token that can be obtained through 'API information' of montra. When using token authentication the auth_type must be set to 'token'.
+* **auth_type** - Can be 'basic' or 'token'. The default value is 'basic' 
 
 #### Examples
 Basic Authentication:
@@ -33,13 +33,13 @@ montra = Montra(url="http://127.0.0.1:8000", token='de4611bcf0c6e393404fac095dab
 
 1. search_datasets
 
-####Parameters:
-**questionnaire** - (TODO)
+#### Parameters:
+* **questionnaire** - (TODO)
 
-####Returns
+#### Returns
 (Todo)
 
-####Example:
+#### Example:
 ```python
 list_of_datasets = montra.search_datasets(questionnaire="some questionnaire name")
 
@@ -47,13 +47,13 @@ list_of_datasets = montra.search_datasets(questionnaire="some questionnaire name
 
 2. get_dataset
 
-####Parameters:
-**questionnaireSlug** - (TODO)
+#### Parameters:
+* **questionnaireSlug** - (TODO)
 
-####Returns
+#### Returns
 (Todo)
 
-####Example:
+#### Example:
 ```python
 dataset = montra.get_dataset(questionnaireSlug='someslug')
 
@@ -61,21 +61,21 @@ dataset = montra.get_dataset(questionnaireSlug='someslug')
 
 3. get_dataentry
 
-####Parameters:
-**questionnaireSlug** - (TODO)
-**acronym** - (TODO)
-**fingerprintHash** - (TODO)
+#### Parameters:
+* **questionnaireSlug** - (TODO)
+* **acronym** - (TODO)
+* **fingerprintHash** - (TODO)
 
-####Returns
+#### Returns
 (Todo)
 
-####Example using 1 arg:
+#### Example using 1 arg:
 ```python
 database_entry = montra.get_dataentry(fingerprintHash='somefingerprinthash')
 
 ```
 
-####Example using 2 args:
+#### Example using 2 args:
 ```python
 database_entry = montra.get_dataentry(acronym="ADC", questionnaireSlug="adcohort")
 
@@ -83,13 +83,13 @@ database_entry = montra.get_dataentry(acronym="ADC", questionnaireSlug="adcohort
 
 4. list_answer
 
-####Parameters:
-**fingerprintHash** - (TODO)
+#### Parameters:
+* **fingerprintHash** - (TODO)
 
-####Returns
+#### Returns
 (Todo)
 
-####Example:
+#### Example:
 ```python
 answers = montra.list_answer(fingerprintHash='somefingerprinthash')
 
@@ -98,14 +98,14 @@ answers = montra.list_answer(fingerprintHash='somefingerprinthash')
 
 5. get_answer
 
-####Parameters:
-**fingerprintHash** - (TODO)
-**question** - (TODO)
+#### Parameters:
+* **fingerprintHash** - (TODO)
+* **question** - (TODO)
 
-####Returns
+#### Returns
 (Todo)
 
-####Example:
+#### Example:
 ```python
 answer = montra.get_answer(fingerprintHash='somefingerprinthash', question='somequestion')
 
@@ -113,15 +113,15 @@ answer = montra.get_answer(fingerprintHash='somefingerprinthash', question='some
 
 6. post_answer
 
-####Parameters:
-**fingerprintHash** - (TODO)
-**question** - (TODO)
-**newAnswer** - (TODO)
+#### Parameters:
+* **fingerprintHash** - (TODO)
+* **question** - (TODO)
+* **newAnswer** - (TODO)
 
-####Returns
+#### Returns
 (Todo)
 
-####Example:
+#### Example:
 ```python
 newAnswer = montra.post_answer(fingerprintHash='somefingerprinthash', question='somequestion', newAnswer="newAnswer")
 
