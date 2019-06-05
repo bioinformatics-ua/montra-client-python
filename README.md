@@ -73,47 +73,44 @@ montra = Montra(url="http://127.0.0.1:8000", token='de4611bcf0c6e393404fac095dab
 
 * **List Answers**
 
-Parameters:
-* **fingerprintHash** - (TODO)
+    Parameters:
+    * **fingerprintHash** - Fingerprint (database entry) hash
 
 
-#### Example:
-```python
-answers = montra.list_answer(fingerprintHash='somefingerprinthash')
+    Example:
+    ```python
+    answers = montra.list_answer(fingerprintHash='somefingerprinthash')
 
-```
+    ```
+    
+    **Note:**
+    Only answers of the following types are available: 'open', 'open-textfield', 'comment', 'numeric', 'email' and 'url'
 
 
-5. get_answer
+* **Get an Answer**
 
-#### Parameters:
-* **fingerprintHash** - (TODO)
-* **question** - (TODO)
+    Parameters:
+    * **fingerprintHash** - Fingerprint (database entry) hash
+    * **question** - Question slug
 
-#### Returns
-(Todo)
+    Example:
+    ```python
+    answer = montra.get_answer(fingerprintHash='somefingerprinthash', question='somequestion')
 
-#### Example:
-```python
-answer = montra.get_answer(fingerprintHash='somefingerprinthash', question='somequestion')
+    ```
 
-```
+* **Create an Answer**
 
-6. post_answer
+    Parameters:
+    * **fingerprintHash** - Fingerprint (database entry) hash
+    * **question** - Question slug
+    * **newAnswer** - String with the new answer
 
-#### Parameters:
-* **fingerprintHash** - (TODO)
-* **question** - (TODO)
-* **newAnswer** - (TODO)
+    Example:
+    ```python
+    newAnswer = montra.post_answer(fingerprintHash='somefingerprinthash', question='somequestion', newAnswer="newAnswer")
 
-#### Returns
-(Todo)
-
-#### Example:
-```python
-newAnswer = montra.post_answer(fingerprintHash='somefingerprinthash', question='somequestion', newAnswer="newAnswer")
-
-```
+    ```
 
 ## Running the tests
 
