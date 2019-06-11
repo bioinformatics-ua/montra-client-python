@@ -15,7 +15,6 @@ The client can be initialiazed using basic or token authentication. Bellow its l
 * **username** - Montra username
 * **password** - Montra password
 * **token** - An API token that can be obtained through 'API information' of montra. When using token authentication the auth_type must be set to 'token'.
-* **auth_type** - Can be 'basic' or 'token'. The default value is 'basic' 
 
 #### Examples
 Basic Authentication:
@@ -26,7 +25,7 @@ montra = Montra(url="http://127.0.0.1:8000", username='username', password='pass
 
 Token Authentication:
 ```python
-montra = Montra(url="http://127.0.0.1:8000", token='de4611bcf0c6e393404fac095dab09fad01c1554', auth_type='token' )
+montra = Montra(url="http://127.0.0.1:8000", token='de4611bcf0c6e393404fac095dab09fad01c1554')
 
 ```
 ### Available Methods
