@@ -24,7 +24,7 @@ class TestAuthenticationMethods(unittest.TestCase):
 
     def test_token_auth(self):
         token = "de4611bcf0c6e393404fac095dab09fad01c1554"
-        montra = Montra(url="http://127.0.0.1:8000", token=token, auth_type='token')
+        montra = Montra(url="http://127.0.0.1:8000", token=token)
         #if the request fails a None is returned
         listOfQuestionnaires = montra.search_datasets(questionnaire="Demo Observational")
         self.assertIsNotNone(listOfQuestionnaires)
