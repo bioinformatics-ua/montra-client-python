@@ -19,11 +19,28 @@ from requests.auth import HTTPDigestAuth
 URL = 'https://bioinformatics.ua.pt/ehden'
 COMM = "ehden"
 
+ERROR_MESSAGES = {
+    "bad_arg": "The argments passed in the constructor are invalid! Please provide a token or the basic credentials using the parameters 'username' and 'password'",
+    "bad_auth_type": "Authentication type not valid. Authentication type should be set as 'basic' or 'token' ",
+    "bad_auth_params": ("Authentication parameters are missing! Please provide valid credentials." 
+                        "You can use either an username and password for a basic authentication or a valid API token using token authentication"),
+    "bad_get_request_generic": "Something wrong with the request!"
+}
+
 class Montra:
-    def __init__(self, url=URL):
+    def __init__(self, url=URL, **args):
+        if "token" in args:
+            self.token = args["token"]
+            self.auth_type = 'token'
+        elif "username" in args and "password" in args:
+            self.username = args["username"]
+            self.password = args["password"]
+            self.auth_type = 'basic'
+        else:
+            raise ValueError(ERROR_MESSAGES["bad_arg"])
         self.ENDPOINT = url
 
-    def search_datasets(self, user, password, questionnaire=COMM):
+    def search_datasets(self, questionnaire=COMM):
         """
         Search for the questionnaires in all communities
 
@@ -31,9 +48,9 @@ class Montra:
         """
         url = self.ENDPOINT + "/api/questionnaires/?search=" + str(questionnaire)
 
-        return self.__get_request(url=url, auth=(user, password))
+        return self.__get_request(url=url)
 
-    def get_dataset(self, user, password, questionnaireSlug=COMM):
+    def get_dataset(self, questionnaireSlug=COMM):
         """
         Gets the dataset by the slug, which is the identifier
 
@@ -41,15 +58,15 @@ class Montra:
         """
         url = self.ENDPOINT + "/api/questionnaires/" + str(questionnaireSlug)
         
-        return self.__get_request(url=url, auth=(user, password))
+        return self.__get_request(url=url)
 
-    def get_dataentry(self, user, password, **args):
+    def get_dataentry(self, **args):
         if(len(args) == 1):
-            return self.__get_dataentry_by_hash(user, password, args["fingerprintHash"])
+            return self.__get_dataentry_by_hash(args["fingerprintHash"])
         else:
-            return self.__get_dataentry_by_acronym(user, password, args["acronym"], args["questionnaireSlug"])
+            return self.__get_dataentry_by_acronym(args["acronym"], args["questionnaireSlug"])
 
-    def __get_dataentry_by_hash(self, user, password, fingerprintHash):
+    def __get_dataentry_by_hash(self, fingerprintHash):
         """
         Gets the fingerprint by the fingprint hash
 
@@ -57,9 +74,9 @@ class Montra:
         """
         url = self.ENDPOINT + "/api/fingerprints/" + str(fingerprintHash)
         
-        return self.__get_request(url=url, auth=(user, password))
+        return self.__get_request(url=url)
 
-    def __get_dataentry_by_acronym(self, user, password, acronym, questionnaireSlug=COMM):
+    def __get_dataentry_by_acronym(self, acronym, questionnaireSlug=COMM):
         """
         Gets the fingerprint by the fingprint acronym and the questionnaire slug
 
@@ -67,9 +84,9 @@ class Montra:
         """
         url = self.ENDPOINT + "/api/fingerprint-cslug-fslug/" + str(questionnaireSlug) + "/" + str(acronym)
 
-        return self.__get_request(url=url, auth=(user, password))
+        return self.__get_request(url=url)
 
-    def list_answer(self, user, password, fingerprintHash):
+    def list_answer(self, fingerprintHash):
         """
         Gets the list of available questions to get or update data of the fingerprint hash
 
@@ -77,9 +94,9 @@ class Montra:
         """
         url = self.ENDPOINT + "/api/fingerprints/" + str(fingerprintHash) + "/answers"
 
-        return self.__get_request(url=url, auth=(user, password))
+        return self.__get_request(url=url)
 
-    def get_answer(self, user, password, fingerprintHash, question):
+    def get_answer(self, fingerprintHash, question):
         """
         Gets the the question of the fingerprint hash
 
@@ -87,9 +104,9 @@ class Montra:
         """
         url = self.ENDPOINT + "/api/fingerprints/" + str(fingerprintHash) + "/answers/" + str(question)
 
-        return self.__get_request(url=url, auth=(user, password))
+        return self.__get_request(url=url)
 
-    def post_answer(self, user, password, fingerprintHash, question, newAnswer):
+    def post_answer(self, fingerprintHash, question, newAnswer):
         """
         Post a new answer in the question of the fingerprint hash
 
@@ -97,12 +114,30 @@ class Montra:
         """
         url = self.ENDPOINT + "/api/fingerprints/" + str(fingerprintHash) + "/answers/" + str(question) + "/"
 
-        response = requests.put(url, auth=(user, password), data={"data":newAnswer})
-        return response.json()
+        return self.__post_request(url=url, data={"data":newAnswer})
 
-    def __get_request(self, url, auth):
+    def __get_request(self, url):
         try:
-            response = requests.get(url, auth=auth)
+            if self.auth_type == 'basic':
+                response = requests.get(url, auth=(self.username, self.password))
+            elif self.auth_type == 'token':
+                response = requests.get(url, headers={'Authorization': 'Token ' + self.token})
+            else:
+                raise ValueError(ERROR_MESSAGES["bad_auth_type"])
+            response.raise_for_status()
             return response.json()
-        except:
-            raise Exception("Something wrong with the request!")
+        except requests.exceptions.HTTPError as err:
+            print err
+            sys.exit(1)
+
+    def __post_request(self, url, data):
+        try:
+            if self.auth_type == 'basic':
+                response = requests.put(url, auth=(self.username, self.password), data=data)
+            elif self.auth_type == 'token':
+                response = requests.put(url, headers={'Authorization': 'Token ' + self.token}, data=data)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.HTTPError as err:
+            print err
+            return None
