@@ -14,10 +14,14 @@ __email__ = 'joao.rafael.almeida@ua.pt'
 __all__ = ()
 
 import requests
+import sys
+import traceback
 from requests.auth import HTTPDigestAuth
 
 URL = 'https://bioinformatics.ua.pt/ehden'
-COMM = "ehden"
+COMMSlug = "ehden"
+COMMName = "ehden"
+QUESSlug = "ehden"
 
 ERROR_MESSAGES = {
     "bad_arg": "The argments passed in the constructor are invalid! Please provide a token or the basic credentials using the parameters 'username' and 'password'",
@@ -40,7 +44,7 @@ class Montra:
             raise ValueError(ERROR_MESSAGES["bad_arg"])
         self.ENDPOINT = url
 
-    def search_datasets(self, questionnaire=COMM):
+    def search_datasets(self, questionnaire=QUESSlug):
         """
         Search for the questionnaires in all communities
 
@@ -50,13 +54,30 @@ class Montra:
 
         return self.__get_request(url=url)
 
-    def get_dataset(self, questionnaireSlug=COMM):
+    def get_dataset(self, communityName=COMMName, questionnaireSlug=QUESSlug):
         """
         Gets the dataset by the slug, which is the identifier
 
         return: json with the dataset (questionnaire)
         """
-        url = self.ENDPOINT + "/api/questionnaires/" + str(questionnaireSlug)
+        communityInfo = self.__get_community_info(communityName=communityName)
+        try:
+            qSlug = [ele for ele in communityInfo["questionnaires"] if ele['slug'] == questionnaireSlug][0]
+            url = self.ENDPOINT + "/api/questionnaires/" + str(qSlug['slug'])
+            
+            return self.__get_request(url=url)
+        except IndexError as err:
+            traceback.print_exc(file=sys.stdout)
+            print err
+            sys.exit(1)
+
+    def __get_community_info(self, communityName):        
+        """
+        Gets the community info by the name
+
+        return: json with all the information (community, questionnaires and fingerprints hashs)
+        """
+        url = self.ENDPOINT + "/api/communities/" + str(communityName)
         
         return self.__get_request(url=url)
 
@@ -76,7 +97,7 @@ class Montra:
         
         return self.__get_request(url=url)
 
-    def __get_dataentry_by_acronym(self, acronym, questionnaireSlug=COMM):
+    def __get_dataentry_by_acronym(self, acronym, questionnaireSlug=QUESSlug):
         """
         Gets the fingerprint by the fingprint acronym and the questionnaire slug
 
@@ -106,7 +127,7 @@ class Montra:
 
         return self.__get_request(url=url)
 
-    def post_answer(self, fingerprintHash, question, newAnswer):
+    def put_answer(self, fingerprintHash, question, newAnswer):
         """
         Post a new answer in the question of the fingerprint hash
 
@@ -114,7 +135,30 @@ class Montra:
         """
         url = self.ENDPOINT + "/api/fingerprints/" + str(fingerprintHash) + "/answers/" + str(question) + "/"
 
-        return self.__post_request(url=url, data={"data":newAnswer})
+        return self.__put_request(url=url, data={"data":newAnswer})
+
+    def new_dataentry(self, communityName=COMMName, questionnaireSlug=QUESSlug):
+        """
+        Post a new dataentry (fingerprint) in the community
+
+        return: json with fingerprint informantion, inclusive the hash
+        """
+        communityInfo = self.__get_community_info(communityName=communityName)
+        try:
+            qSlug = [ele for ele in communityInfo["questionnaires"] if ele['slug'] == questionnaireSlug][0]
+            qSlug['id']
+
+            url = self.ENDPOINT + "/api/fingerprints/"
+
+            return self.__post_request(url=url, data={
+                "questionnaire":qSlug['id'], 
+                "description": "",
+                "draft": True, 
+                "community": communityInfo["id"]})
+        except IndexError as err:
+            traceback.print_exc(file=sys.stdout)
+            print err
+            sys.exit(1)
 
     def __get_request(self, url):
         try:
@@ -127,17 +171,32 @@ class Montra:
             response.raise_for_status()
             return response.json()
         except requests.exceptions.HTTPError as err:
+            traceback.print_exc(file=sys.stdout)
             print err
             sys.exit(1)
 
     def __post_request(self, url, data):
         try:
             if self.auth_type == 'basic':
-                response = requests.put(url, auth=(self.username, self.password), data=data)
+                response = requests.post(url, auth=(self.USERNAME, self.PASSWORD), data=data)
+            elif self.auth_type == 'token':
+                response = requests.post(url, headers={'Authorization': 'Token ' + self.token}, data=data)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.HTTPError as err:
+            traceback.print_exc(file=sys.stdout)
+            print err
+            return None
+
+    def __put_request(self, url, data):
+        try:
+            if self.auth_type == 'basic':
+                response = requests.put(url, auth=(self.USERNAME, self.PASSWORD), data=data)
             elif self.auth_type == 'token':
                 response = requests.put(url, headers={'Authorization': 'Token ' + self.token}, data=data)
             response.raise_for_status()
             return response.json()
         except requests.exceptions.HTTPError as err:
+            traceback.print_exc(file=sys.stdout)
             print err
             return None
