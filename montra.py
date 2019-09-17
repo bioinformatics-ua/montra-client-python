@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__title__ = 'montra'
-__version__ = '6.0'
+__title__ = 'montra-client-python'
+__version__ = '1.0'
 __author__ = 'João Rafael Almeida'
 __license__ = 'GPL v3'
 __copyright__ = 'Copyright 2019, João Rafael Almeida, Universidade de Aveiro'
@@ -31,7 +31,9 @@ ERROR_MESSAGES = {
     "bad_get_request_generic": "Something wrong with the request!"
 }
 
+
 class Montra:
+
     def __init__(self, url=URL, **args):
         if "token" in args:
             self.token = args["token"]
@@ -44,6 +46,7 @@ class Montra:
             raise ValueError(ERROR_MESSAGES["bad_arg"])
         self.ENDPOINT = url
 
+
     def search_datasets(self, questionnaire=QUESSlug):
         """
         Search for the questionnaires in all communities
@@ -54,6 +57,7 @@ class Montra:
 
         return self.__get_request(url=url)
 
+
     def get_dataset(self, communityName=COMMName, questionnaireSlug=QUESSlug):
         """
         Gets the dataset by the slug, which is the identifier
@@ -61,6 +65,7 @@ class Montra:
         return: json with the dataset (questionnaire)
         """
         communityInfo = self.__get_community_info(communityName=communityName)
+
         try:
             qSlug = [ele for ele in communityInfo["questionnaires"] if ele['slug'] == questionnaireSlug][0]
             url = self.ENDPOINT + "/api/questionnaires/" + str(qSlug['slug'])
@@ -69,7 +74,8 @@ class Montra:
         except IndexError as err:
             traceback.print_exc(file=sys.stdout)
             print err
-            sys.exit(1)
+            return None
+
 
     def __get_community_info(self, communityName):        
         """
@@ -81,11 +87,20 @@ class Montra:
         
         return self.__get_request(url=url)
 
+
     def get_dataentry(self, **args):
         if(len(args) == 1):
             return self.__get_dataentry_by_hash(args["fingerprintHash"])
         else:
-            return self.__get_dataentry_by_acronym(args["acronym"], args["questionnaireSlug"])
+            try:
+                communityInfo = self.__get_community_info(communityName=args["communityName"])
+                comm_slug = communityInfo['slug']
+                return self.__get_dataentry_by_database_name(args["database_name"], comm_slug)
+            except IndexError as err:
+                traceback.print_exc(file=sys.stdout)
+                print err
+                return None
+
 
     def __get_dataentry_by_hash(self, fingerprintHash):
         """
@@ -97,15 +112,17 @@ class Montra:
         
         return self.__get_request(url=url)
 
-    def __get_dataentry_by_acronym(self, acronym, questionnaireSlug=QUESSlug):
+
+    def __get_dataentry_by_database_name(self, database_name, communitySlug=COMMSlug):
         """
-        Gets the fingerprint by the fingprint acronym and the questionnaire slug
+        Gets the fingerprint by the fingprint name and the questionnaire slug
 
         return: json with the fingerprint 
         """
-        url = self.ENDPOINT + "/api/fingerprint-cslug-fslug/" + str(questionnaireSlug) + "/" + str(acronym)
+        url = self.ENDPOINT + "/api/fingerprint-cslug-fslug/" + str(communitySlug) + "/" + str(database_name) + "/"
 
         return self.__get_request(url=url)
+
 
     def list_answer(self, fingerprintHash):
         """
@@ -117,6 +134,7 @@ class Montra:
 
         return self.__get_request(url=url)
 
+
     def get_answer(self, fingerprintHash, question):
         """
         Gets the the question of the fingerprint hash
@@ -126,6 +144,7 @@ class Montra:
         url = self.ENDPOINT + "/api/fingerprints/" + str(fingerprintHash) + "/answers/" + str(question)
 
         return self.__get_request(url=url)
+
 
     def put_answer(self, fingerprintHash, question, newAnswer):
         """
@@ -137,7 +156,8 @@ class Montra:
 
         return self.__put_request(url=url, data={"data":newAnswer})
 
-    def new_dataentry(self, communityName=COMMName, questionnaireSlug=QUESSlug):
+
+    def new_dataentry(self, database_name,  communityName=COMMName, questionnaireSlug=QUESSlug, description=""):
         """
         Post a new dataentry (fingerprint) in the community
 
@@ -152,13 +172,15 @@ class Montra:
 
             return self.__post_request(url=url, data={
                 "questionnaire":qSlug['id'], 
-                "description": "",
+                "description": description,
+                "database_name": database_name,
                 "draft": True, 
                 "community": communityInfo["id"]})
         except IndexError as err:
             traceback.print_exc(file=sys.stdout)
             print err
-            sys.exit(1)
+            return None
+
 
     def __get_request(self, url):
         try:
@@ -173,12 +195,13 @@ class Montra:
         except requests.exceptions.HTTPError as err:
             traceback.print_exc(file=sys.stdout)
             print err
-            sys.exit(1)
+            return None
+
 
     def __post_request(self, url, data):
         try:
             if self.auth_type == 'basic':
-                response = requests.post(url, auth=(self.USERNAME, self.PASSWORD), data=data)
+                response = requests.post(url, auth=(self.username, self.password), data=data)
             elif self.auth_type == 'token':
                 response = requests.post(url, headers={'Authorization': 'Token ' + self.token}, data=data)
             response.raise_for_status()
@@ -188,10 +211,11 @@ class Montra:
             print err
             return None
 
+
     def __put_request(self, url, data):
         try:
             if self.auth_type == 'basic':
-                response = requests.put(url, auth=(self.USERNAME, self.PASSWORD), data=data)
+                response = requests.put(url, auth=(self.username, self.password), data=data)
             elif self.auth_type == 'token':
                 response = requests.put(url, headers={'Authorization': 'Token ' + self.token}, data=data)
             response.raise_for_status()

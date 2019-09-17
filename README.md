@@ -33,7 +33,7 @@ montra = Montra(url="http://127.0.0.1:8000", token='de4611bcf0c6e393404fac095dab
 * **Search Datasets**
 
     Parameters:
-    * **questionnaire** - Search string with the  questionnaire slug or name
+    * **questionnaire** - Search string with the questionnaire slug or name
     
     Example:
     ```python
@@ -45,10 +45,11 @@ montra = Montra(url="http://127.0.0.1:8000", token='de4611bcf0c6e393404fac095dab
 
     Parameters:
     * **questionnaireSlug** - Questionnaire slug
+    * **communityName** - Community name
 
     Example:
     ```python
-    dataset = montra.get_dataset(questionnaireSlug='someslug')
+    dataset = montra.get_dataset(communityName='Some community Name', questionnaireSlug='someslug')
 
     ```
 
@@ -56,24 +57,39 @@ montra = Montra(url="http://127.0.0.1:8000", token='de4611bcf0c6e393404fac095dab
 
     Parameters:
     * **questionnaireSlug** - Questionnaire slug
-    * **acronym** - Fingerprint (database entry) acronym
+    * **database_name** - Fingerprint (database entry) name / acronym
     * **fingerprintHash** - Fingerprint (database entry) hash
+    * **communityName** - Community name
 
-    Example using 1 arg:
+    Example using fingerprint hash:
     ```python
     database_entry = montra.get_dataentry(fingerprintHash='somefingerprinthash')
 
     ```
-    Example using 2 args:
+    Example using database name and questionnaire slug:
     ```python
-    database_entry = montra.get_dataentry(acronym="ADC", questionnaireSlug="adcohort")
+    database_entry = montra.get_dataentry(database_name="ADC", communityName="Some community name")
+
+    ```
+
+* **Create Dataentry**
+
+    Parameters:
+    * **questionnaireSlug** - Questionnaire slug
+    * **database_name** - Database name / acronym
+    * **description** - Database description
+    * **communityName** - Community name
+
+    Example:
+    ```python
+    database_entry = montra.new_dataentry( database_name='somedbname', description="Teste", communityName='Some community Name', questionnaireSlug='Some questionnaire Slug')
 
     ```
 
 * **List Answers**
 
     Parameters:
-    * **fingerprintHash** - Fingerprint (database entry) hash
+    * **fingerprintHash** - Fingerprint (database) hash
 
 
     Example:
@@ -86,7 +102,7 @@ montra = Montra(url="http://127.0.0.1:8000", token='de4611bcf0c6e393404fac095dab
     Only answers of the following types are available: 'open', 'open-textfield', 'comment', 'numeric', 'email' and 'url'
 
 
-* **Get an Answer**
+* **Get Answer**
 
     Parameters:
     * **fingerprintHash** - Fingerprint (database entry) hash
@@ -98,7 +114,7 @@ montra = Montra(url="http://127.0.0.1:8000", token='de4611bcf0c6e393404fac095dab
 
     ```
 
-* **Create an Answer**
+* **Update Answer**
 
     Parameters:
     * **fingerprintHash** - Fingerprint (database entry) hash
@@ -107,15 +123,15 @@ montra = Montra(url="http://127.0.0.1:8000", token='de4611bcf0c6e393404fac095dab
 
     Example:
     ```python
-    newAnswer = montra.post_answer(fingerprintHash='somefingerprinthash', question='somequestion', newAnswer="newAnswer")
+    newAnswer = montra.put_answer(fingerprintHash='somefingerprinthash', question='somequestion', newAnswer="newAnswer")
 
     ```
 
-## Running the tests
+## Running tests
 
 In order to run tests, the following command should be run on the root folder of the project:
 
 ```
-python test.py
+python tests.py --user user --password 123456 --comm "EMIF EHR" --dataset_slug adcohort --token "de4611bcf0c6e393404fac095dab09fad01c1222"
 ```
 
