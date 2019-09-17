@@ -8,6 +8,22 @@ Montra Webservices Wrapper for Python
 
 It must exist an instance of montra up and running. It's also necessary valid credentials to execute this client (user and password for basic authentication, or an API token for token authentication).
 
+### Installation
+
+Instal using pip:
+
+```
+pip install -e git://github.com/bioinformatics-ua/montra-client-python.git#egg=montra-client
+
+```
+
+Include Montra into your script:
+
+```
+from montra import Montra
+
+```
+
 ### Client initialization
 The client can be initialiazed using basic or token authentication. Bellow its listed all the available arguments and also examples for how to instanciate the client using the available authentications methods.
 
