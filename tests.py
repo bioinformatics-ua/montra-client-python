@@ -117,36 +117,60 @@ class TestAuthenticationMethods(unittest.TestCase):
         
         # add database 
         database_name = "Test" + str(time.time())
-        dataentry = montra.new_dataentry( database_name=database_name, description="Teste", communityName=_COMM, questionnaireSlug=_DATASET)
-        self.assertIsNotNone(dataentry)
+        database = montra.new_database( database_name=database_name, description="Teste", communityName=_COMM, questionnaireSlug=_DATASET)
+        self.assertIsNotNone(database)
 
 
-    def test_get_dataentry_1_param(self):
+    def test_update_database(self):
+       
+        montra = Montra(url=_URL, username=_USER, password=_PASS)
+        
+        # add database 
+        database_name = "Test" + str(time.time())
+        database = montra.new_database( database_name=database_name, description="Teste", communityName=_COMM, questionnaireSlug=_DATASET)
+        self.assertIsNotNone(database)
+
+        # update db
+        database = montra.update_database( database['fingerprint_hash'], draft=False, description="Teste123")
+        self.assertIsNotNone(database)
+        self.assertTrue(database['description'] == 'Teste123')
+        self.assertTrue(database['draft'] == False)
+
+
+    def test_get_database_1_param(self):
         
         montra = Montra(url=_URL, username=_USER, password=_PASS)
         
         # add database
         database_name = "Test" + str(time.time())
-        dataentry = montra.new_dataentry( database_name=database_name, description="Teste", communityName=_COMM, questionnaireSlug=_DATASET)
-        self.assertIsNotNone(dataentry)
+        database = montra.new_database( database_name=database_name, description="Teste", communityName=_COMM, questionnaireSlug=_DATASET)
+        self.assertIsNotNone(database)
         
         # get fingerprint by hash
-        fingerprint = montra.get_dataentry(fingerprintHash=dataentry['fingerprint_hash'])
+        fingerprint = montra.get_database(fingerprintHash=database['fingerprint_hash'])
         self.assertIsNotNone(fingerprint)
 
 
-    def test_get_dataentry_2_param(self):
+    def test_get_database_2_param(self):
         
         montra = Montra(url=_URL, username=_USER, password=_PASS)
         
         # add database
         database_name = "Test" + str(time.time())
-        dataentry = montra.new_dataentry( database_name=database_name, description="Teste", communityName=_COMM, questionnaireSlug=_DATASET)
-        self.assertIsNotNone(dataentry)
+        database = montra.new_database( database_name=database_name, description="Teste", communityName=_COMM, questionnaireSlug=_DATASET)
+        self.assertIsNotNone(database)
         
         # get database by using its name
-        fingerprint = montra.get_dataentry( database_name=database_name, communityName=_COMM)
+        fingerprint = montra.get_database( database_name=database_name, communityName=_COMM)
         self.assertIsNotNone(fingerprint)
+
+    def test_get_database_with_invalid_database_name(self):
+        
+        montra = Montra(url=_URL, username=_USER, password=_PASS)
+        
+        # get database by using its name
+        fingerprint = montra.get_database( database_name='some_invalid_db_name', communityName=_COMM)
+        self.assertIsNone(fingerprint)
 
 
     def test_list_answers(self):
@@ -155,11 +179,11 @@ class TestAuthenticationMethods(unittest.TestCase):
         
         #create fingerprint
         database_name = "Test" + str(time.time())
-        dataentry = montra.new_dataentry( database_name=database_name, description="Teste", communityName=_COMM, questionnaireSlug=_DATASET)
-        self.assertIsNotNone(dataentry)
+        database = montra.new_database( database_name=database_name, description="Teste", communityName=_COMM, questionnaireSlug=_DATASET)
+        self.assertIsNotNone(database)
 
         # get answers
-        answers = montra.list_answer(fingerprintHash=dataentry["fingerprint_hash"])
+        answers = montra.list_answer(fingerprintHash=database["fingerprint_hash"])
         self.assertTrue((answers is not None) and (len(answers) > 0))
 
     
@@ -169,11 +193,11 @@ class TestAuthenticationMethods(unittest.TestCase):
         
         #create fingerprint
         database_name = "Test" + str(time.time())
-        dataentry = montra.new_dataentry( database_name=database_name, description="Teste", communityName=_COMM, questionnaireSlug=_DATASET)
-        self.assertIsNotNone(dataentry)
+        database = montra.new_database( database_name=database_name, description="Teste", communityName=_COMM, questionnaireSlug=_DATASET)
+        self.assertIsNotNone(database)
 
         # get answer
-        answer = montra.get_answer(fingerprintHash=dataentry["fingerprint_hash"], question = 'email_PI')
+        answer = montra.get_answer(fingerprintHash=database["fingerprint_hash"], question = 'email_PI')
         self.assertEquals(answer['question'], 'email_PI')
 
 
@@ -183,27 +207,27 @@ class TestAuthenticationMethods(unittest.TestCase):
 
         #create fingerprint
         database_name = "Test" + str(time.time())
-        dataentry = montra.new_dataentry( database_name=database_name, description="Teste", communityName=_COMM, questionnaireSlug=_DATASET)
-        self.assertIsNotNone(dataentry)
+        database = montra.new_database( database_name=database_name, description="Teste", communityName=_COMM, questionnaireSlug=_DATASET)
+        self.assertIsNotNone(database)
 
         # get answers
-        answers = montra.list_answer(fingerprintHash=dataentry["fingerprint_hash"])
+        answers = montra.list_answer(fingerprintHash=database["fingerprint_hash"])
         self.assertTrue((answers is not None) and (len(answers) > 0))
 
         #edit answers
         # email
         question = 'email_PI'
-        newAnswer = montra.put_answer(fingerprintHash=dataentry["fingerprint_hash"], question=question, newAnswer="pedrofreire@ua.pt")
+        newAnswer = montra.put_answer(fingerprintHash=database["fingerprint_hash"], question=question, newAnswer="pedrofreire@ua.pt")
         self.assertEquals(newAnswer['data'], "pedrofreire@ua.pt")
    
         # phone
         question = 'SC__phone'
-        newAnswer = montra.put_answer(fingerprintHash=dataentry["fingerprint_hash"], question=question, newAnswer="+351933933933")
+        newAnswer = montra.put_answer(fingerprintHash=database["fingerprint_hash"], question=question, newAnswer="+351933933933")
         self.assertEquals(newAnswer['data'], "+351933933933")
 
         # unknown question
         question = 'SC__phone99999'
-        newAnswer = montra.put_answer(fingerprintHash=dataentry["fingerprint_hash"], question=question, newAnswer="+351933933933")
+        newAnswer = montra.put_answer(fingerprintHash=database["fingerprint_hash"], question=question, newAnswer="+351933933933")
         self.assertIsNone(newAnswer)
 
     
@@ -213,17 +237,17 @@ class TestAuthenticationMethods(unittest.TestCase):
 
         #create fingerprint
         database_name = "Test" + str(time.time())
-        dataentry = montra.new_dataentry( database_name=database_name, description="Teste", communityName=_COMM, questionnaireSlug=_DATASET)
-        self.assertIsNotNone(dataentry)
+        database = montra.new_database( database_name=database_name, description="Teste", communityName=_COMM, questionnaireSlug=_DATASET)
+        self.assertIsNotNone(database)
 
         # get answers
-        answers = montra.list_answer(fingerprintHash=dataentry["fingerprint_hash"])
+        answers = montra.list_answer(fingerprintHash=database["fingerprint_hash"])
         self.assertTrue((answers is not None) and (len(answers) > 0))
 
         #edit answers
         # unknown question
         question = 'SC__phone99999'
-        newAnswer = montra.put_answer(fingerprintHash=dataentry["fingerprint_hash"], question=question, newAnswer="+351933933933")
+        newAnswer = montra.put_answer(fingerprintHash=database["fingerprint_hash"], question=question, newAnswer="+351933933933")
         self.assertIsNone(newAnswer)
 
 

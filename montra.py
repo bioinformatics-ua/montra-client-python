@@ -88,21 +88,21 @@ class Montra:
         return self.__get_request(url=url)
 
 
-    def get_dataentry(self, **args):
+    def get_database(self, **args):
         if(len(args) == 1):
-            return self.__get_dataentry_by_hash(args["fingerprintHash"])
+            return self.__get_database_by_hash(args["fingerprintHash"])
         else:
             try:
                 communityInfo = self.__get_community_info(communityName=args["communityName"])
                 comm_slug = communityInfo['slug']
-                return self.__get_dataentry_by_database_name(args["database_name"], comm_slug)
+                return self.__get_database_by_database_name(args["database_name"], comm_slug)
             except IndexError as err:
                 traceback.print_exc(file=sys.stdout)
                 print err
                 return None
 
 
-    def __get_dataentry_by_hash(self, fingerprintHash):
+    def __get_database_by_hash(self, fingerprintHash):
         """
         Gets the fingerprint by the fingprint hash
 
@@ -113,7 +113,7 @@ class Montra:
         return self.__get_request(url=url)
 
 
-    def __get_dataentry_by_database_name(self, database_name, communitySlug=COMMSlug):
+    def __get_database_by_database_name(self, database_name, communitySlug=COMMSlug):
         """
         Gets the fingerprint by the fingprint name and the questionnaire slug
 
@@ -157,9 +157,9 @@ class Montra:
         return self.__put_request(url=url, data={"data":newAnswer})
 
 
-    def new_dataentry(self, database_name,  communityName=COMMName, questionnaireSlug=QUESSlug, description=""):
+    def new_database(self, database_name,  communityName=COMMName, questionnaireSlug=QUESSlug, description=""):
         """
-        Post a new dataentry (fingerprint) in the community
+        Post a new database (fingerprint) in the community
 
         return: json with fingerprint informantion, inclusive the hash
         """
@@ -180,6 +180,20 @@ class Montra:
             traceback.print_exc(file=sys.stdout)
             print err
             return None
+
+    def update_database(self, fingerprintHash, draft=True, description=""):
+        """
+        Post a new database (fingerprint) in the community
+
+        return: json with fingerprint informantion, inclusive the hash
+        """
+        
+        url = self.ENDPOINT + "/api/fingerprints/" + fingerprintHash + "/"
+
+        return self.__put_request(url=url, data={
+            "description": description,
+            "draft": draft
+        })
 
 
     def __get_request(self, url):
