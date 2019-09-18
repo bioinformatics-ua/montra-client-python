@@ -30,7 +30,7 @@ The client can be initialiazed using basic or token authentication. Bellow its l
 #### Available parameters:
 * **username** - Montra username
 * **password** - Montra password
-* **token** - An API token that can be obtained through 'API information' of montra. When using token authentication the auth_type must be set to 'token'.
+* **token** - An API token that can be obtained through 'API information' of montra
 
 #### Examples
 Basic Authentication:
