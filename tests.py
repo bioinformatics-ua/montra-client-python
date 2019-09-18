@@ -131,8 +131,8 @@ class TestAuthenticationMethods(unittest.TestCase):
         self.assertIsNotNone(dataentry)
         
         # get fingerprint by hash
-        fingerprintOp1 = montra.get_dataentry(fingerprintHash=dataentry['fingerprint_hash'])
-        self.assertIsNotNone(fingerprintOp1)
+        fingerprint = montra.get_dataentry(fingerprintHash=dataentry['fingerprint_hash'])
+        self.assertIsNotNone(fingerprint)
 
 
     def test_get_dataentry_2_param(self):
@@ -145,8 +145,8 @@ class TestAuthenticationMethods(unittest.TestCase):
         self.assertIsNotNone(dataentry)
         
         # get database by using its name
-        fingerprintOp2 = montra.get_dataentry( database_name=database_name, communityName=_COMM)
-        self.assertTrue((fingerprintOp2 is not None) and (fingerprintOp2["fingerprint_hash"]) )
+        fingerprint = montra.get_dataentry( database_name=database_name, communityName=_COMM)
+        self.assertIsNotNone(fingerprint)
 
 
     def test_list_answers(self):
