@@ -98,7 +98,7 @@ montra = Montra(url="http://127.0.0.1:8000", token='de4611bcf0c6e393404fac095dab
 
     Example:
     ```python
-    database = montra.new_database( database_name='somedbname', description="Teste", communityName='Some community Name', questionnaireSlug='Some questionnaire Slug')
+    database = montra.new_database( database_name='somedbname', communityName='Some community Name', questionnaireSlug='Some questionnaire Slug')
 
     ```
 
@@ -110,7 +110,7 @@ montra = Montra(url="http://127.0.0.1:8000", token='de4611bcf0c6e393404fac095dab
 
     Example:
     ```python
-    database = montra.update_database( database_name='somedbname', description="Teste", communityName='Some community Name', questionnaireSlug='Some questionnaire Slug')
+    database = montra.update_database( 'some_fingerprint_hash', draft=True)
 
     ```
 
