@@ -6,18 +6,20 @@ Montra Webservices Wrapper for Python
 
 ### Prerequisites
 
-It must exist an instance of montra up and running. It's also necessary valid credentials to execute this client (user and password for basic authentication, or an API token for token authentication).
+This wrapper can be used with any instance of up-to-date MONTRA up and running (e.g. localhost, EHDEN portal, etc). Its usage requires valid credentials to execute it (user and password for basic authentication, or an API token for token authentication).
 
 ### Installation
 
-Instal using pip:
+Install using pip:
 
 ```
 pip install -e git://github.com/bioinformatics-ua/montra-client-python.git#egg=montra-client
 
 ```
 
-Include Montra into your script:
+### Usage
+
+Import Montra either into your Python script or into shell if you make the API calls in command line:
 
 ```
 from montra import Montra
@@ -25,7 +27,7 @@ from montra import Montra
 ```
 
 ### Client initialization
-The client can be initialiazed using basic or token authentication. Bellow its listed all the available arguments and also examples for how to instanciate the client using the available authentications methods.
+The client can be initialiazed using basic or token authentication. Bellow we list all the available arguments and some examples on how to instantiate the client using the available authentications methods. These examples assume there is a MONTRA installation running on localhost, port 8000.
 
 #### Available parameters:
 * **username** - Montra username
@@ -84,7 +86,7 @@ montra = Montra(url="http://127.0.0.1:8000", token='de4611bcf0c6e393404fac095dab
     ```
     Example using database name and questionnaire slug:
     ```python
-    database = montra.get_database(database_name="ADC", communityName="Some community name")
+    database = montra.get_database(database_name="ABC", communityName="Some community name")
 
     ```
 
@@ -93,7 +95,6 @@ montra = Montra(url="http://127.0.0.1:8000", token='de4611bcf0c6e393404fac095dab
     Parameters:
     * **questionnaireSlug** - Questionnaire slug
     * **database_name** - Database name / acronym
-    * **description** - Database description
     * **communityName** - Community name
 
     Example:
@@ -106,11 +107,11 @@ montra = Montra(url="http://127.0.0.1:8000", token='de4611bcf0c6e393404fac095dab
 
     Parameters:
     * **draft** - Boolean
-    * **description** - Database description
+    * **fingerprintHash** - Fingerprint (database) hash
 
     Example:
     ```python
-    database = montra.update_database( 'some_fingerprint_hash', draft=True)
+    database = montra.update_database(fingerprintHash='some_fingerprint_hash', draft=True)
 
     ```
 
@@ -127,7 +128,7 @@ montra = Montra(url="http://127.0.0.1:8000", token='de4611bcf0c6e393404fac095dab
     ```
     
     **Note:**
-    Only answers of the following types are available: 'open', 'open-textfield', 'comment', 'numeric', 'email' and 'url'
+    Only answers of the following types are supported: 'open', 'open-textfield', 'comment', 'numeric', 'email' and 'url'
 
 
 * **Get Answer**
@@ -141,6 +142,8 @@ montra = Montra(url="http://127.0.0.1:8000", token='de4611bcf0c6e393404fac095dab
     answer = montra.get_answer(fingerprintHash='somefingerprinthash', question='somequestion')
 
     ```
+    **Note:**
+    In order to get all question slugs execute first the above method list_answer()
 
 * **Update Answer**
 
@@ -154,12 +157,15 @@ montra = Montra(url="http://127.0.0.1:8000", token='de4611bcf0c6e393404fac095dab
     newAnswer = montra.put_answer(fingerprintHash='somefingerprinthash', question='somequestion', newAnswer="newAnswer")
 
     ```
+    **Note:**
+    In order to get all question slugs execute first the above method list_answer()
+
 
 ## Running tests
 
 In order to run tests, the following command should be run on the root folder of the project:
 
 ```
-python tests.py --user user --password 123456 --comm "EMIF EHR" --dataset_slug adcohort --token "de4611bcf0c6e393404fac095dab09fad01c1222" --url http://localhost:8000
+python tests.py --user <username> --password <password> --comm <community_name> --dataset_slug <questionnaire_slug> --token <token> --url <url_MONTRA_installation>
 ```
 
