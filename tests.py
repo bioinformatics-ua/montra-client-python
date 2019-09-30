@@ -5,11 +5,11 @@ from montra import Montra
 import time
 
 _USER = 'admin'
-_PASS = '123456'
-_TOKEN = 'de4611bcf0c6e393404fac095dab09fad01c1111'
+_PASS = 'emif'
+_TOKEN = '876a281ad0a1644d09df7f241346ea6fcbf2059b'
 _URL = 'http://127.0.0.1:8000'
-_DATASET = "demo-slug"
-_COMM = "Test Comm"
+_DATASET = "ehden_final"
+_COMM = "Community test"
 
 def main():
 
@@ -120,6 +120,16 @@ class TestAuthenticationMethods(unittest.TestCase):
         database = montra.new_database( database_name=database_name, description="Teste", communityName=_COMM, questionnaireSlug=_DATASET)
         self.assertIsNotNone(database)
 
+    def test_create_duplicated_databases(self):
+       
+        montra = Montra(url=_URL, username=_USER, password=_PASS)
+        
+        # add database 
+        database_name = "TestDuplicated" + str(time.time())
+        database = montra.new_database( database_name=database_name, description="Teste", communityName=_COMM, questionnaireSlug=_DATASET)
+        self.assertIsNotNone(database)
+        database = montra.new_database( database_name=database_name, description="Teste", communityName=_COMM, questionnaireSlug=_DATASET)
+        self.assertIsNone(database)
 
     def test_update_database(self):
        
