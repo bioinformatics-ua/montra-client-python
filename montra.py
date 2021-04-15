@@ -26,7 +26,7 @@ QUESSlug = "ehden"
 ERROR_MESSAGES = {
     "bad_arg": "The argments passed in the constructor are invalid! Please provide a token or the basic credentials using the parameters 'username' and 'password'",
     "bad_auth_type": "Authentication type not valid. Authentication type should be set as 'basic' or 'token' ",
-    "bad_auth_params": ("Authentication parameters are missing! Please provide valid credentials." 
+    "bad_auth_params": ("Authentication parameters are missing! Please provide valid credentials."
                         "You can use either an username and password for a basic authentication or a valid API token using token authentication"),
     "bad_get_request_generic": "Something wrong with the request!"
 }
@@ -69,7 +69,7 @@ class Montra:
         try:
             qSlug = [ele for ele in communityInfo["questionnaires"] if ele['slug'] == questionnaireSlug][0]
             url = self.ENDPOINT + "/api/questionnaires/" + str(qSlug['slug'])
-            
+
             return self.__get_request(url=url)
         except IndexError as err:
             traceback.print_exc(file=sys.stdout)
@@ -77,14 +77,14 @@ class Montra:
             return None
 
 
-    def __get_community_info(self, communityName):        
+    def __get_community_info(self, communityName):
         """
         Gets the community info by the name
 
         return: json with all the information (community, questionnaires and fingerprints hashs)
         """
         url = self.ENDPOINT + "/api/communities/" + str(communityName)
-        
+
         return self.__get_request(url=url)
 
 
@@ -106,10 +106,10 @@ class Montra:
         """
         Gets the fingerprint by the fingprint hash
 
-        return: json with the fingerprint 
+        return: json with the fingerprint
         """
         url = self.ENDPOINT + "/api/fingerprints/" + str(fingerprintHash)
-        
+
         return self.__get_request(url=url)
 
 
@@ -117,7 +117,7 @@ class Montra:
         """
         Gets the fingerprint by the fingprint name and the questionnaire slug
 
-        return: json with the fingerprint 
+        return: json with the fingerprint
         """
         url = self.ENDPOINT + "/api/fingerprint-cslug-fslug/" + str(communitySlug) + "/" + str(database_name) + "/"
 
@@ -171,10 +171,10 @@ class Montra:
             url = self.ENDPOINT + "/api/fingerprints/"
 
             return self.__post_request(url=url, data={
-                "questionnaire":qSlug['id'], 
+                "questionnaire":qSlug['id'],
                 "description": description,
                 "database_name": database_name,
-                "draft": True, 
+                "draft": True,
                 "community": communityInfo["id"]})
         except IndexError as err:
             traceback.print_exc(file=sys.stdout)
@@ -187,7 +187,7 @@ class Montra:
 
         return: json with fingerprint informantion, inclusive the hash
         """
-        
+
         url = self.ENDPOINT + "/api/fingerprints/" + fingerprintHash + "/"
 
         return self.__put_request(url=url, data={
@@ -215,9 +215,9 @@ class Montra:
     def __post_request(self, url, data):
         try:
             if self.auth_type == 'basic':
-                response = requests.post(url, auth=(self.username, self.password), data=data)
+                response = requests.post(url, headers={'Content-Type': 'application/json'}, auth=(self.username, self.password), json=data)
             elif self.auth_type == 'token':
-                response = requests.post(url, headers={'Authorization': 'Token ' + self.token}, data=data)
+                response = requests.post(url, headers={'Content-Type': 'application/json', 'Authorization': 'Token ' + self.token}, json=data)
             response.raise_for_status()
             return response.json()
         except requests.exceptions.HTTPError as err:
@@ -229,9 +229,9 @@ class Montra:
     def __put_request(self, url, data):
         try:
             if self.auth_type == 'basic':
-                response = requests.put(url, auth=(self.username, self.password), data=data)
+                response = requests.put(url, headers={'Content-Type': 'application/json'}, auth=(self.username, self.password), json=data)
             elif self.auth_type == 'token':
-                response = requests.put(url, headers={'Authorization': 'Token ' + self.token}, data=data)
+                response = requests.put(url, headers={'Content-Type': 'application/json', 'Authorization': 'Token ' + self.token}, json=data)
             response.raise_for_status()
             return response.json()
         except requests.exceptions.HTTPError as err:
