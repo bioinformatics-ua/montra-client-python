@@ -45,7 +45,7 @@ class Montra:
 
     def get_dataentry(self, user, password, **args):
         if(len(args) == 1):
-            return self.__get_dataentry_by_hash(user, password, args["fingerprintHash"])
+            return self.__get_dataentry_by_hash(user, password, args["fingerprint"]["fingerprint_hash"])
         else:
             return self.__get_dataentry_by_acronym(user, password, args["acronym"], args["questionnaireSlug"])
 
