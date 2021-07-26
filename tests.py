@@ -17,11 +17,13 @@ print(" -- search_datasets done -- \n")
 print(" -- get_dataset --")
 questionnaire = montra.get_dataset(user, password, questionnaireSlug=questionnaireSlug)
 print(questionnaire)
+fingerprint = questionnaire["fingerprint_set"][0]
 print(fingerprint)
 print(" -- search_datasets done -- \n")
 
 
 print(" -- get_dataentry 1 param--")
+fingerprintOp1 = montra.get_dataentry(user, password, fingerprint=fingerprint)
 print(fingerprintOp1)
 print(" -- get_dataentry 1 param done -- \n")
 
